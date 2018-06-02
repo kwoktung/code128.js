@@ -1,0 +1,25 @@
+{
+  "name": "code128.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kwoktung/code128.js.git"
+  },
+  "keywords": [
+    "code128.js"
+  ],
+  "author": "kwoktung <onlyif2009@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kwoktung/code128.js/issues"
+  },
+  "homepage": "https://github.com/kwoktung/code128.js#readme",
+  "devDependencies": {
+    "rollup": "^0.59.4"
+  }
+}
