@@ -1,75 +1,91 @@
-import { findChar,  getCharById } from './characters'
+import CHARACTERS from './characters'
 
-let uuid = 0
-function get_uuid() {
-    return uuid++
-}
+class Code128 {
+    constructor (charactors) {
+        if (!charactors) throw new Error('Missing Charactors')
 
-function Code128B() {
-    this.canvas = document.createElement('canvas')
-    this.ctx = this.canvas.getContext('2d')
-    this.id = this.canvas.id = get_uuid()
-    this.canvas.width = 800;
-    this.canvas.height = 200; // width 需要根据 数据来生成
-    this.minLen = 3
-    this.index = 0
-    document.body.appendChild(this.canvas)
-}
+        const canvas = this.canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        const uw = 1
+        const uh = uw * 50
+        canvas.height = uh;
 
-Code128B.prototype.drawMinSpace = function (color) {
-    this.ctx.save()
-    try {
-        this.ctx.beginPath()
-        this.ctx.rect(this.minLen * this.index, 0, this.minLen, this.canvas.height )
-        if (color) {
-            this.ctx.fillStyle = color
+        let startCodeIndex = 0
+        let dataCodes;
+
+        const charUnits = charactors.split('')
+        if (/^[0-9]+$/.test(charactors) && charactors.length === 1) {
+            startCodeIndex = 103
+            dataCodes = charUnits.map(item => CHARACTERS.find(o => o[0] === item))
         }
-        this.ctx.closePath()
-        this.ctx.fill()
-    } finally {
-        this.index ++
-    }
-    this.ctx.restore()
-}
-
-Code128B.prototype.blackSpace = function() {
-    this.drawMinSpace('#000')
-}
-
-Code128B.prototype.whiteSpace = function () {
-    this.drawMinSpace('#fff')
-}
-
-Code128B.prototype.bitsCode = function(str) {
-    var array = str.split('')
-    array.forEach(element => {
-        if (+element) {
-            this.blackSpace()
+        else if (/^[0-9]+$/.test(charactors) && charactors.length % 2 === 0) {
+            startCodeIndex = 105
+            dataCodes = []
+            for (let i = 0, len = charUnits.length; i < len; i += 2) {
+                let key = `${charUnits[i]}${charUnits[i+1]}`
+                dataCodes.push(CHARACTERS.find(o => o[2] === key))
+            }
+        } else if (/^[0-9]+$/.test(charactors) && charactors.length % 2 === 1) {
+            startCodeIndex = 105
+            dataCodes = []
+            for (let i = 0, len = charUnits.length - 1; i < len; i += 2) {
+                let key = `${charUnits[i]}${charUnits[i+1]}`
+                dataCodes.push(CHARACTERS.find(o => o[2] === key))
+            }
+            dataCodes.push(CHARACTERS[101])
+            dataCodes.push(CHARACTERS.find(o => o[0] === charUnits[charUnits.length - 1]))
+        } else if (/^[A-Z0-9]+$/.test(charactors)) {
+            startCodeIndex = 103
+            dataCodes = charUnits.map(item => CHARACTERS.find(o => o[0] === item))
         } else {
-            this.whiteSpace()
+            startCodeIndex = 104
+            dataCodes = charUnits.map(item => CHARACTERS.find(o => o[1] === item))
         }
-    });
+
+        let checkSum = 0;
+        dataCodes.forEach((item, i) => {
+            checkSum += item[5] * (i + 1)
+        })
+        checkSum += startCodeIndex
+
+        let checkSumCode = checkSum % 103
+        
+        dataCodes.push(CHARACTERS[checkSumCode])
+        dataCodes.unshift(CHARACTERS[startCodeIndex])
+        dataCodes.push(CHARACTERS[106])
+        console.log(dataCodes)
+        
+        let elements = dataCodes.map(item => item[4])
+        let units = elements.join('').split('')
+
+        this.canvas.width = units.length * 3
+        document.body.appendChild(this.canvas)
+
+        function drawUnit(context, i, uw, uh, color) {
+            context.save()
+            try {
+                context.beginPath()
+                context.rect(uw * i, 0, uw, uh)
+                if (color) {
+                    context.fillStyle = color
+                }
+                context.closePath()
+                context.fill()
+            } finally {
+                context.restore()
+            }
+            
+        }
+
+        for (let i = 0, len = units.length; i < len; i ++) {
+            if (+units[i]) {
+                drawUnit(context, i, uw, uh, '#000')
+            } else {
+                drawUnit(context, i, uw, uh, '#fff')
+            }
+        }
+        
+    }
 }
 
-Code128B.prototype.char = function(str) {
-    var array = str.split('')
-    var arr = array.map(function(item){ return findChar(item) })
-    
-    var sum = 0
-    arr.forEach(function (item, index) {
-        console.log(index, item[2])
-        sum += item[2] * (index + 1)
-    })
-    sum += 104
-    var code = sum%103
-    console.log(code)
-    arr.push(getCharById(code))
-    arr.unshift(getCharById(104))
-    arr.push(getCharById(106))
-    
-    var arr2 = arr.map(function(item){ return item[4]})
-    var arr3 = arr2.join('')
-    this.bitsCode(arr3)
-}
-
-export default Code128B
+export default Code128

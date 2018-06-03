@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/kwoktung/code128.js#readme",
   "devDependencies": {
-    "rollup": "^0.59.4"
+    "babel-core": "^6.26.3",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.7.0",
+    "rollup": "^0.59.4",
+    "rollup-plugin-babel": "^3.0.4"
   }
 }
