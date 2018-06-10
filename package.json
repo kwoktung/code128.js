@@ -1,6 +1,6 @@
 {
   "name": "code128.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pure JavaScript library for barcode (code128) generation using canvas",
   "main": "index.js",
   "scripts": {
