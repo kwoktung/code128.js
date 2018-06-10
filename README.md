@@ -1,17 +1,31 @@
-## CODE128
+## code128.js
 
-基于浏览器环境下，条形码（code128）简单实现
+code128.js is a pure JavaScript library for generating barcodes using HTML5 canvas.
 
-参考资料
+## usage
+```
+import code128 from 'code128.js'
+var code = new Code128('code128')
+code.insert(document.body)
+```
 
-https://www.keyence.com.cn/ss/products/auto_id/barcode_lecture/basic/mechanism/
+OR
 
-http://d1.ourdev.cn/bbs_upload782111/files_52/ourdev_721339S0J4B3.pdf
+```
+<!DOCTYPE html>
+<html>
+  <body>
+    <script src="/path/to/code128.js"></script>
+    <script>
+      (function() {
+        var code = new Code128('code128')
+        code.insert(document.body)
+      })();
+    </script>
+  </body>
+</html>
+```
 
-http://www.voidcn.com/article/p-rltchwxn-bpd.html
+## license
 
-https://blog.csdn.net/jato333/article/details/3748375
-
-http://www.cnblogs.com/pengzhen/p/4361049.html
-
-TODO： 自动在code128A 和 code128B 和 code128C 之间切换
+MIT

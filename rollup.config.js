@@ -4,7 +4,7 @@ export default {
     input: 'src/index.js',
     output: {
       name: 'Code128',
-      file: 'lib/index.js',
+      file: 'dist/index.js',
       format: 'umd'
     },
     plugins: [

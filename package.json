@@ -1,17 +1,19 @@
 {
   "name": "code128.js",
   "version": "1.0.0",
-  "description": "",
+  "description": "Pure JavaScript library for barcode (code128) generation using canvas",
   "main": "index.js",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "test": "jasmine"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kwoktung/code128.js.git"
   },
   "keywords": [
-    "code128.js"
+    "barcode",
+    "code128"
   ],
   "author": "kwoktung <onlyif2009@gmail.com>",
   "license": "MIT",
@@ -23,6 +25,7 @@
     "babel-core": "^6.26.3",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.7.0",
+    "jasmine": "^3.1.0",
     "rollup": "^0.59.4",
     "rollup-plugin-babel": "^3.0.4"
   }
