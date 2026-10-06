@@ -23,3 +23,9 @@ Before touching any source, capture the current encoder's output as a regression
 
 - `test/fixtures/golden.json` exists with all of the inputs above.
 - The fixture is committed before ticket 03 changes `encode`.
+
+## Comments
+
+**Done.** `scripts/gen-golden.cjs` generates `test/fixtures/golden.json` with 13 entries from the 1.x `dist/core.js` (rebuilt first; identical to the committed build). Every entry has length `11n + 2` and ends with the stop pattern, and regeneration is deterministic.
+
+Deviation: `~{}|` was replaced with `` ~|[]^` `` because 1.x crashes on `{`/`}` (a wrong mapping in the Code B table). This is tracked in `.scratch/element-table-braces/issues/01-code-b-braces-mapped-wrong.md`.
