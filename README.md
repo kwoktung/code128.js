@@ -88,7 +88,7 @@ Every renderer takes the same layout options, passed to `render` or `layout` (or
 | `background` | `'#fff'` | background color, `null` for transparent |
 | `quietZone` | `0` | blank modules on each side (scanners usually want at least `10`) |
 
-Supported input is printable ASCII (space through `~`). `{` and `}` are not supported yet. Unsupported characters throw, for example `Unsupported character "中" at index 2`.
+Supported input is printable ASCII (space through `~`). Other characters throw, for example `Unsupported character "中" at index 2`.
 
 ## api
 
@@ -148,8 +148,9 @@ Behavior changes:
 - **The default `unitWidth` is now `2` everywhere.** It was `1` outside React Native. Pass `unitWidth: 1` to keep the old size.
 - **React Native no longer resolves `code128.js` to a different build.** Import from `code128.js/react-native` explicitly.
 - **Unsupported characters throw a descriptive error** instead of a `TypeError`.
+- **`{` and `}` now encode correctly.** In 1.x they crashed because of a symbol-table bug.
 - **Explicitly `undefined` options fall back to the defaults.**
-- **Encoded output is unchanged**: 2.0 produces the same bits as 1.x for every supported input.
+- **Encoded output is unchanged**: 2.0 produces the same bits as 1.x for every input that 1.x could encode.
 
 ## license
 

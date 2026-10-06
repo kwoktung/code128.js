@@ -15,4 +15,10 @@ describe('ELEMENT_TABLE', () => {
             expect(sum).toBe(modules)
         })
     })
+
+    it('maps printable ASCII to the Code A and Code B columns in order', () => {
+        // Code A values 0..63 are ASCII 32..95; Code B values 0..94 are ASCII 32..126.
+        ELEMENT_TABLE.slice(0, 64).forEach(([value, codeA]) => expect(codeA).toBe(String.fromCharCode(32 + value)))
+        ELEMENT_TABLE.slice(0, 95).forEach(([value, , codeB]) => expect(codeB).toBe(String.fromCharCode(32 + value)))
+    })
 })
