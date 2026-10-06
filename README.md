@@ -8,6 +8,8 @@ The core turns a string into a plain layout model. A **renderer** is a function 
 npm install code128.js
 ```
 
+**Try it on [CodePen](https://codepen.io/editor/kwoktung/pen/01a111e3-0432-7c7d-84b4-689ed951e95c)**: type any text, switch between the svg, dom and canvas renderers, adjust the options and copy the generated code.
+
 Upgrading from 1.x? See [docs/1.x.md](docs/1.x.md).
 
 ## quick start
