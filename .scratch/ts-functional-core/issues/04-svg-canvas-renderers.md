@@ -15,3 +15,12 @@ Part of `.scratch/ts-functional-core/spec.md`.
 - Unit tests run against a hand-built `BarcodeModel` (not through `encode`).
 - An escaping test checks that `color: '"/><script>'` produces no raw `"` or `<` in the attribute.
 - The canvas test uses a recording mock context and checks the call order and arguments.
+
+## Comments
+
+**Done.** `src/svg.ts` (`svg()`) and `src/canvas.ts` (`canvas(ctx)`, plus the `CanvasContext` type) are in place, with tests in `test/svg.test.ts` and `test/canvas.test.ts`. 32 tests pass, and typecheck and build are green.
+
+Notes:
+- The SVG structure lives in the internal module `src/svg-tree.ts` (`svgTree(model)` returns a node tree). `svg()` serializes it, and ticket 05's `dom()` should build elements from the same tree so that both outputs stay identical.
+- The markup is byte-identical in structure to 1.x `toSVG` (attribute order, background rect, `<g fill>`). The escaping covers `&`, `"` and `<`.
+- `CanvasContext.fillStyle` is typed `string | object` rather than referencing `CanvasGradient`/`CanvasPattern`, so the published `.d.ts` doesn't require the DOM lib (useful for node-canvas users). A type-level test checks that `CanvasRenderingContext2D` is assignable to it.
