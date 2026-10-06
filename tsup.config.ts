@@ -12,6 +12,8 @@ export default defineConfig({
     outExtension: ({ format }) => ({ js: format === 'cjs' ? '.cjs' : '.mjs' }),
     // tsup injects `baseUrl` into its dts build, which TypeScript 6 deprecates.
     dts: { compilerOptions: { ignoreDeprecations: '6.0' } },
+    // Share the core between entries in CJS too (ESM splits by default).
+    splitting: true,
     clean: true,
     target: 'es2018',
     external: ['react', 'react-native']
