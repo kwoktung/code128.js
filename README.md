@@ -1,66 +1,155 @@
 ## code128.js
 
-code128.js is a pure JavaScript library for generating Code128 barcodes in the browser and in React Native.
+Code128 barcode generation with pluggable renderers, for the browser, Node and React Native.
 
-The encoder (`code128.js/dist/core`) has no platform dependencies; each environment gets a thin renderer on top of it.
-
-## browser
+The core turns a string into a plain layout model. A **renderer** is a function from that model to whatever your environment needs: an SVG string, pixels on a canvas, a DOM element, React Native views, or anything you write yourself.
 
 ```
-import Code128 from 'code128.js'
-var code = new Code128('code128')
-code.insert(document.body, { unitWidth: 2, height: 60 })
+npm install code128.js
 ```
 
-OR
+## quick start
 
-```
-<!DOCTYPE html>
-<html>
-  <body>
-    <script src="/path/to/code128.js"></script>
-    <script>
-      (function() {
-        var code = new Code128('code128')
-        code.insert(document.body)
-      })();
-    </script>
-  </body>
-</html>
+### SVG string (browser, Node, server rendering)
+
+```ts
+import { render } from 'code128.js'
+import { svg } from 'code128.js/svg'
+
+const markup: string = render('code128', svg(), { height: 60 })
 ```
 
-## react native
+### DOM (inline `<svg>` element)
 
-Metro resolves `code128.js` to the React Native build automatically. The `Barcode` component renders with plain `View`s, so no native module is required.
+```ts
+import { render } from 'code128.js'
+import { dom } from 'code128.js/dom'
 
+const element: SVGSVGElement = render('code128', dom(document.body))
 ```
-import { Barcode } from 'code128.js'
 
-<Barcode value="code128" unitWidth={2} height={60} />
+### canvas
+
+`canvas(ctx)` accepts any `CanvasRenderingContext2D`-compatible context (browser, node-canvas, react-native-canvas, ...). Use `layout` to size the canvas before drawing:
+
+```ts
+import { encode, layout } from 'code128.js'
+import { canvas } from 'code128.js/canvas'
+
+const model = layout(encode('code128'), { unitWidth: 3 })
+const element = document.createElement('canvas')
+element.width = model.width
+element.height = model.height
+canvas(element.getContext('2d')!)(model)
 ```
 
-If you already use `react-native-svg`, you can render the SVG string instead:
+### `<script>` tag
 
+```html
+<script src="https://unpkg.com/code128.js@2"></script>
+<script>
+  Code128.render('code128', Code128.dom(document.body))
+</script>
 ```
-import Code128 from 'code128.js'
+
+The global `Code128` exposes `encode`, `layout`, `render`, `svg`, `canvas` and `dom`.
+
+### React Native
+
+The `Barcode` component renders with plain `View`s, so no native module is required.
+
+```tsx
+import React from 'react'
+import { Barcode } from 'code128.js/react-native'
+
+export const Label = () => <Barcode value="code128" height={60} quietZone={10} />
+```
+
+If you already use `react-native-svg`, render the SVG string instead:
+
+```tsx
+import React from 'react'
 import { SvgXml } from 'react-native-svg'
+import { render } from 'code128.js'
+import { svg } from 'code128.js/svg'
 
-<SvgXml xml={new Code128('code128').toSVG({ unitWidth: 2 })} />
+export const Label = () => <SvgXml xml={render('code128', svg())} />
 ```
+
+## options
+
+Every renderer takes the same layout options, passed to `render` or `layout` (or as `Barcode` props):
+
+| option | default | description |
+| --- | --- | --- |
+| `unitWidth` | `2` | width of one module in pixels; fractions are allowed |
+| `height` | `50` | bar height in pixels |
+| `color` | `'#000'` | bar color |
+| `background` | `'#fff'` | background color, `null` for transparent |
+| `quietZone` | `0` | blank modules on each side (scanners usually want at least `10`) |
+
+Supported input is printable ASCII (space through `~`). `{` and `}` are not supported yet. Unsupported characters throw, for example `Unsupported character "中" at index 2`.
 
 ## api
 
-`new Code128(input)` exposes:
+```ts
+import { encode, layout, render } from 'code128.js'
+import type { BarcodeModel, Encoded, LayoutOptions, Renderer } from 'code128.js'
 
-- `elements` – encoded Code128 symbols
-- `bits` – module string, e.g. `'11010010000...'`
-- `bars` – black bars as `[{ x, width }]` in module units, for custom renderers
-- `size(options)` – `{ width, height }` in pixels
-- `draw(context, options)` – draw onto any `CanvasRenderingContext2D`-compatible context
-- `toSVG(options)` – SVG markup string
-- `insert(target, options)` – browser only, appends a `<canvas>` to `target`
+const encoded: Encoded = encode('code128')        // { input, codes, bits }
+const model: BarcodeModel = layout(encoded, {})   // { width, height, bars, color, background }
+const length: number = render('code128', (m: BarcodeModel) => m.bars.length)
+```
 
-`options`: `unitWidth` (default `1`), `height` (default `50`), `color` (default `'#000'`), `background` (default `'#fff'`, pass `null` for transparent).
+- `encode(input)` returns the Code128 symbol values (`codes`: start, data, checksum, stop) and the module string (`bits`, `'1'` = bar).
+- `layout(encoded, options)` turns `bits` into bars in pixels: `bars` is `[{ x, width }]`, already scaled by `unitWidth` and offset by `quietZone`, and `width`/`height` are the total size.
+- `render(input, renderer, options)` is `renderer(layout(encode(input), options))` and returns whatever the renderer returns.
+
+| renderer | import | returns |
+| --- | --- | --- |
+| `svg()` | `code128.js/svg` | SVG markup `string` |
+| `canvas(ctx)` | `code128.js/canvas` | `void` (draws at the context's origin) |
+| `dom(target)` | `code128.js/dom` | the `SVGSVGElement` appended to `target` |
+| `views({ style })` | `code128.js/react-native` | a React Native element (used by `Barcode`) |
+
+## writing your own renderer
+
+A renderer is just `(model: BarcodeModel) => R`, so supporting a new environment means writing one function. For example, an HTML renderer for email templates that don't allow SVG:
+
+```ts
+import { render, type Renderer } from 'code128.js'
+
+const html = (): Renderer<string> => ({ width, height, bars, color, background }) =>
+    `<div style="position:relative;width:${width}px;height:${height}px;background:${background ?? 'transparent'}">` +
+    bars.map(bar => `<div style="position:absolute;top:0;left:${bar.x}px;width:${bar.width}px;height:${height}px;background:${color}"></div>`).join('') +
+    `</div>`
+
+const markup = render('code128', html())
+```
+
+## migrating from 1.x
+
+2.0 replaces the `Code128` class with functions and per-renderer imports.
+
+| 1.x | 2.x |
+| --- | --- |
+| `new Code128(x).insert(el, o)` | `render(x, dom(el), o)`: appends an `<svg>`, not a `<canvas>` |
+| `new Code128(x).draw(ctx, o)` | `render(x, canvas(ctx), o)` |
+| `new Code128(x).toSVG(o)` | `render(x, svg(), o)` |
+| `new Code128(x).size(o)` | `layout(encode(x), o)` → `{ width, height }` |
+| `new Code128(x).bits` | `encode(x).bits` |
+| `new Code128(x).bars` (module units) | `layout(encode(x), o).bars` (pixels) |
+| `new Code128(x).elements` | `encode(x).codes` (symbol values only) |
+| `import { Barcode } from 'code128.js'` on React Native | `import { Barcode } from 'code128.js/react-native'` |
+| `window.Code128` constructor | `window.Code128` namespace: `Code128.render(x, Code128.dom(el))` |
+
+Behavior changes:
+
+- **The default `unitWidth` is now `2` everywhere.** It was `1` outside React Native. Pass `unitWidth: 1` to keep the old size.
+- **React Native no longer resolves `code128.js` to a different build.** Import from `code128.js/react-native` explicitly.
+- **Unsupported characters throw a descriptive error** instead of a `TypeError`.
+- **Explicitly `undefined` options fall back to the defaults.**
+- **Encoded output is unchanged**: 2.0 produces the same bits as 1.x for every supported input.
 
 ## license
 
