@@ -1,8 +1,9 @@
 {
   "name": "code128.js",
   "version": "1.0.3",
-  "description": "Pure JavaScript library for barcode (code128) generation using canvas",
-  "main": "index.js",
+  "description": "Pure JavaScript library for barcode (code128) generation for browser and React Native",
+  "main": "dist/index.js",
+  "react-native": "dist/native.js",
   "scripts": {
     "build": "rollup -c",
     "test": "jasmine"
@@ -13,7 +14,8 @@
   },
   "keywords": [
     "barcode",
-    "code128"
+    "code128",
+    "react-native"
   ],
   "author": "kwoktung <onlyif2009@gmail.com>",
   "license": "MIT",
@@ -29,5 +31,17 @@
     "rollup": "^0.59.4",
     "rollup-plugin-babel": "^3.0.4"
   },
-  "packageManager": "pnpm@10.30.1"
+  "packageManager": "pnpm@10.30.1",
+  "peerDependencies": {
+    "react": ">=16.8",
+    "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-native": {
+      "optional": true
+    }
+  }
 }
