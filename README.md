@@ -8,6 +8,8 @@ The core turns a string into a plain layout model. A **renderer** is a function 
 npm install code128.js
 ```
 
+Upgrading from 1.x? See [docs/1.x.md](docs/1.x.md).
+
 ## quick start
 
 ### SVG string (browser, Node, server rendering)
@@ -126,31 +128,6 @@ const html = (): Renderer<string> => ({ width, height, bars, color, background }
 
 const markup = render('code128', html())
 ```
-
-## migrating from 1.x
-
-2.0 replaces the `Code128` class with functions and per-renderer imports.
-
-| 1.x | 2.x |
-| --- | --- |
-| `new Code128(x).insert(el, o)` | `render(x, dom(el), o)`: appends an `<svg>`, not a `<canvas>` |
-| `new Code128(x).draw(ctx, o)` | `render(x, canvas(ctx), o)` |
-| `new Code128(x).toSVG(o)` | `render(x, svg(), o)` |
-| `new Code128(x).size(o)` | `layout(encode(x), o)` → `{ width, height }` |
-| `new Code128(x).bits` | `encode(x).bits` |
-| `new Code128(x).bars` (module units) | `layout(encode(x), o).bars` (pixels) |
-| `new Code128(x).elements` | `encode(x).codes` (symbol values only) |
-| `import { Barcode } from 'code128.js'` on React Native | `import { Barcode } from 'code128.js/react-native'` |
-| `window.Code128` constructor | `window.Code128` namespace: `Code128.render(x, Code128.dom(el))` |
-
-Behavior changes:
-
-- **The default `unitWidth` is now `2` everywhere.** It was `1` outside React Native. Pass `unitWidth: 1` to keep the old size.
-- **React Native no longer resolves `code128.js` to a different build.** Import from `code128.js/react-native` explicitly.
-- **Unsupported characters throw a descriptive error** instead of a `TypeError`.
-- **`{` and `}` now encode correctly.** In 1.x they crashed because of a symbol-table bug.
-- **Explicitly `undefined` options fall back to the defaults.**
-- **Encoded output is unchanged**: 2.0 produces the same bits as 1.x for every input that 1.x could encode.
 
 ## license
 
