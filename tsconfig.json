@@ -11,7 +11,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "types": [],
     "noEmit": true
   },
-  "include": ["src", "test", "tsup.config.ts"]
+  "include": ["src"]
 }
