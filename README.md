@@ -103,7 +103,7 @@ const model: BarcodeModel = layout(encoded, {})   // { width, height, bars, colo
 const length: number = render('code128', (m: BarcodeModel) => m.bars.length)
 ```
 
-- `encode(input)` returns the Code128 symbol values (`codes`: start, data, checksum, stop) and the module string (`bits`, `'1'` = bar).
+- `encode(input)` returns the Code128 symbol values (`codes`: start, data including code-set switches, checksum, stop) and the module string (`bits`, `'1'` = bar). It switches between code sets A, B and C wherever that makes the barcode narrower. For example, Code C packs two digits per symbol, so `SN20261006123456` is about 30% narrower than encoding it entirely in Code B.
 - `layout(encoded, options)` turns `bits` into bars in pixels: `bars` is `[{ x, width }]`, already scaled by `unitWidth` and offset by `quietZone`, and `width`/`height` are the total size.
 - `render(input, renderer, options)` is `renderer(layout(encode(input), options))` and returns whatever the renderer returns.
 

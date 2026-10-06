@@ -3,10 +3,6 @@ import { encode, layout, render, type BarcodeModel, type Encoded } from '../src/
 import golden from './fixtures/golden.json'
 
 describe('encode', () => {
-    it.each(golden)('matches the 1.x bits for $input', ({ input, bits }) => {
-        expect(encode(input).bits).toBe(bits)
-    })
-
     it('exposes symbol values: start, data, checksum, stop', () => {
         // StartC 105, "12", "34", checksum (105 + 12*1 + 34*2) % 103 = 82, Stop 106
         expect(encode('1234')).toEqual({
@@ -16,10 +12,12 @@ describe('encode', () => {
         })
     })
 
-    it('switches to Code A for the trailing digit of odd-length numbers', () => {
-        // StartC, "12", CODEA (101), "3" in Code A (19), checksum, Stop
-        expect(encode('123').codes.slice(0, 4)).toEqual([105, 12, 101, 19])
+    it('switches code sets mid-input', () => {
+        // StartB, "S", "N", CODEC (99), "20", "26", checksum, Stop
+        expect(encode('SN2026').codes.slice(0, 6)).toEqual([104, 51, 46, 99, 20, 26])
     })
+
+    // Shortest-encoding and round-trip properties live in code-sets.test.ts.
 
     it('encodes every printable ASCII character', () => {
         for (let c = 32; c <= 126; c++) {
