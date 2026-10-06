@@ -1,13 +1,14 @@
-import { execFileSync, execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import vm from 'node:vm'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { encode, render } from '../src/index'
 import { svg } from '../src/svg'
 
 // These tests exercise the built package in dist/ through Node's real
 // `exports` resolution (self-reference by package name), not vitest's.
+// dist/ is built by test/global-setup.ts.
 
 const root = resolve(__dirname, '..')
 const SUBPATHS = ['code128.js', 'code128.js/svg', 'code128.js/canvas', 'code128.js/dom']
@@ -15,10 +16,6 @@ const SUBPATHS = ['code128.js', 'code128.js/svg', 'code128.js/canvas', 'code128.
 function node(args: string[], code: string): string {
     return execFileSync(process.execPath, [...args, '-e', code], { cwd: root, encoding: 'utf8' }).trim()
 }
-
-beforeAll(() => {
-    execSync('pnpm build', { cwd: root, stdio: 'ignore' })
-}, 60_000)
 
 describe('package exports', () => {
     const expected = render('1234', svg())
