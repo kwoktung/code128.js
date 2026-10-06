@@ -18,3 +18,12 @@ Implement `src/index.ts` exporting `encode`, `layout`, `render` and the types `E
 
 - The golden test passes: `encode(input).bits` equals `golden.json` for every entry.
 - There are tests for the error messages, the defaults, the quietZone offset and width, a fractional unitWidth, `background: null`, and that `render` returns what the renderer returns.
+
+## Comments
+
+**Done.** `src/index.ts` exports `encode`, `layout`, `render` and the `Encoded`, `LayoutOptions`, `Bar`, `BarcodeModel` and `Renderer` types. `test/index.test.ts` has 23 tests, including all 13 golden entries matching bit for bit. The built `dist/index.{cjs,mjs}` loads in plain Node and contains no `document` or `window` references.
+
+Notes:
+- `layout` ignores options that are explicitly `undefined` (unlike plain object spread or 1.x `Object.assign`), so a wrapper such as the RN component can forward unset props safely. `background: null` is still honoured as transparent.
+- The `{`/`}` table bug (`.scratch/element-table-braces/`) is **not** fixed here. Those characters now throw `Unsupported character "{" at index N` instead of a `TypeError`.
+- `tsconfig.json` gains `resolveJsonModule` so the test can import the golden fixture.
