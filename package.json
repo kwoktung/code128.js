@@ -1,13 +1,73 @@
 {
   "name": "code128.js",
-  "version": "1.0.3",
-  "description": "Pure JavaScript library for barcode (code128) generation for browser and React Native",
-  "main": "dist/index.js",
-  "react-native": "dist/native.js",
+  "version": "2.0.0",
+  "description": "Code128 barcode generation with pluggable renderers for the browser, Node and React Native",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/code128.global.js",
+  "jsdelivr": "./dist/code128.global.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./svg": {
+      "import": {
+        "types": "./dist/svg.d.mts",
+        "default": "./dist/svg.mjs"
+      },
+      "require": {
+        "types": "./dist/svg.d.ts",
+        "default": "./dist/svg.cjs"
+      }
+    },
+    "./canvas": {
+      "import": {
+        "types": "./dist/canvas.d.mts",
+        "default": "./dist/canvas.mjs"
+      },
+      "require": {
+        "types": "./dist/canvas.d.ts",
+        "default": "./dist/canvas.cjs"
+      }
+    },
+    "./dom": {
+      "import": {
+        "types": "./dist/dom.d.mts",
+        "default": "./dist/dom.mjs"
+      },
+      "require": {
+        "types": "./dist/dom.d.ts",
+        "default": "./dist/dom.cjs"
+      }
+    },
+    "./react-native": {
+      "import": {
+        "types": "./dist/react-native.d.mts",
+        "default": "./dist/react-native.mjs"
+      },
+      "require": {
+        "types": "./dist/react-native.d.ts",
+        "default": "./dist/react-native.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
   "scripts": {
-    "build": "tsup",
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test"
   },
   "repository": {
     "type": "git",
@@ -38,6 +98,7 @@
     }
   },
   "devDependencies": {
+    "@types/node": "^26.6.4",
     "@types/react": "^19.3.0",
     "@types/react-test-renderer": "^19.3.0",
     "happy-dom": "^20.14.5",
