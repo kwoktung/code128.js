@@ -1,6 +1,7 @@
 // Generates test/fixtures/golden.json from the 1.x encoder (dist/core.js).
-// Run against a 1.x build only: the fixture is the regression baseline the
-// TypeScript rewrite must reproduce bit for bit.
+// Run against a 1.x build only. The fixture is the 1.x baseline: the 2.x
+// encoder must encode the same content and never produce a longer barcode
+// (see test/code-sets.test.ts).
 const fs = require('fs')
 const path = require('path')
 const { default: Core } = require('../dist/core')
