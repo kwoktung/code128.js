@@ -12,7 +12,7 @@ const INPUTS = [
     '1234',
     '00',
     '123456789012',
-    // odd-length digits (Code C + switch to B for the last digit)
+    // odd-length digits (Code C, then CODEA for the last digit)
     '123',
     '12345',
     // uppercase + digits (Code A)
