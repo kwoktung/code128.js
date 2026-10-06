@@ -21,6 +21,18 @@ describe('encode', () => {
         expect(encode('123').codes.slice(0, 4)).toEqual([105, 12, 101, 19])
     })
 
+    it('encodes every printable ASCII character', () => {
+        for (let c = 32; c <= 126; c++) {
+            const char = String.fromCharCode(c)
+            expect(() => encode(`a${char}`), JSON.stringify(char)).not.toThrow()
+        }
+    })
+
+    it('encodes braces with their own Code B symbols', () => {
+        // StartB, "{" 91, "[" 59, "}" 93, "]" 61, checksum, Stop
+        expect(encode('{[}]').codes.slice(0, 5)).toEqual([104, 91, 59, 93, 61])
+    })
+
     it('requires input', () => {
         expect(() => encode('')).toThrow('Input Required')
     })

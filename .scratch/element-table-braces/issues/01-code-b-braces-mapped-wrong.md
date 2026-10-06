@@ -1,6 +1,6 @@
 # 01 Code B table maps `{` and `}` to the wrong characters
 
-Status: needs-triage
+Status: resolved
 
 ## Problem
 
@@ -19,3 +19,12 @@ Found while generating the golden fixture (`.scratch/ts-functional-core/issues/0
 
 - Fixing the table changes no output for any input that 1.x could encode (those inputs never reach 91 or 93 through `[`/`]`), so it does not break golden parity.
 - Without a fix, the TS rewrite (ticket 03) will throw `Unsupported character "{"` for these inputs. The fix could land in ticket 03 or separately; decide during triage.
+
+## Comments
+
+**Fixed** on `ts-rewrite`, before the 2.0 release. `src/element-table.ts` rows 91 and 93 now hold `{` and `}` in the Code B column.
+
+- `test/element-table.test.ts` checks that the Code A column (0–63) and the Code B column (0–94) map to consecutive printable ASCII, which would have caught this bug.
+- `test/index.test.ts` encodes every printable ASCII character, and checks that `{[}]` gives `[91, 59, 93, 61]`.
+- All three new tests fail without the fix, and golden parity is unchanged.
+- The README now says all printable ASCII is supported and lists the fix under the 2.0 behaviour changes.
